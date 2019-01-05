@@ -13,7 +13,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data2.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 manager = Manager(app)
@@ -78,9 +78,10 @@ def server_error(e):
 
 def make_shell_context():
     return dict(app=app,db=db,User=User,Role=Role)
+manager.add_command('shell',Shell(make_context=make_shell_context))
 if __name__ == '__main__':
-    db.create_all()
-    manager.add_command('shell',Shell(make_context=make_shell_context))
+#    db.create_all()
+#    manager.add_command('shell',Shell(make_context=make_shell_context))
     manager.run()
 
 
