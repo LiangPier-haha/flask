@@ -1,0 +1,7 @@
+<p>Dear {{ current_user.name }}</p>
+<p>To change your email<a href="{{ url_for('auth.set_email',token=token,_external=True) }}">Click here</a></p>
+<p>You also paste the following link to your borrower's address</p>
+
+<p>{{ url_for('auth.set_email',token=token,_external=True)}}</p>
+
+<p>If you haven't got a request simply ignore the messgae</p>

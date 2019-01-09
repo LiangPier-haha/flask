@@ -1,5 +1,5 @@
 from . import auth
-from .forms import LoginForm,RegisteForm,ResetPasswordForm,SetPasswordForm
+from .forms import LoginForm,RegisteForm,ResetPasswordForm,SetPasswordForm,ChangePasswordForm,ChangeEmailForm
 from flask import render_template,url_for,redirect,flash,request
 from ..models import User
 from ..email import send_mail
@@ -103,5 +103,44 @@ def set_password(token):
         else:
             flash('The email is invalid')
             return redirect(url_for('main.index'))
+    return render_template('auth/reset_password.html',form=form)
+
+@auth.route('/chang_password',methods=['GET','POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.password.data
+            db.session.add(current_user)
+            logout_user()
+            flash('Your password has been updated.')
+            return redirect(url_for('auth.login'))
     return render_template('auth/change_password.html',form=form)
+
+@auth.route('/change_email',methods=['GET','POST'])
+@login_required
+def change_email():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            token = current_user.generate_changeemail_token()
+            send_mail(form.email.data,'Change your email','auth/email/change_email',user=current_user,token=token)
+            flash('A email has been sent to the new email')
+            return redirect(url_for('main.index'))
+    return render_template('auth/change_email.html',form=form)
+
+@auth.route('/set_email/<token>',methods=['GET','POST'])
+def set_email(token):
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            if current_user.change_email(token,form.email.data):
+                flash('Your email has been updated,please relogin.')
+                return redirect(url_for('auth.login'))
+            flash('The email is invalid.')
+            return redirect(url_for('auth.set_email',token=token))
+        flash('The password is false.')
+        return redirect(url_for('auth.set_email',token=token))
+    return render_template('auth/change_email.html',form=form)
 

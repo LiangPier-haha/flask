@@ -43,3 +43,14 @@ class SetPasswordForm(FlaskForm):
         if User.query.filter_by(email=field.data).first() is None:
             raise ValidationError('Uknown email address')
 
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField('Old Password',validators=[Required()])
+    password = PasswordField('Password',validators=[Required(),EqualTo('password2',message='Password must metch')])
+    password2 = PasswordField('Confirm Password',validators=[Required()])
+    submit = SubmitField('提交')
+
+
+class ChangeEmailForm(FlaskForm):
+    email = StringField('New Email',validators=[Required(),Length(1,64),Email()])
+    password = PasswordField('Password',validators=[Required()])
+    submit = SubmitField('提交')
