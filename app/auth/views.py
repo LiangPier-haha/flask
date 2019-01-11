@@ -124,7 +124,7 @@ def change_email():
     form = ChangeEmailForm()
     if form.validate_on_submit():
         if current_user.verify_password(form.password.data):
-            token = current_user.generate_changeemail_token()
+            token = current_user.generate_changeemail_token(form.email.data)
             send_mail(form.email.data,'Change your email','auth/email/change_email',user=current_user,token=token)
             flash('A email has been sent to the new email')
             return redirect(url_for('main.index'))
