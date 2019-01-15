@@ -18,8 +18,9 @@ def func(f):
     return func2
 def follow_to():
     print('start follow_to')
-    yield 'haha'
+    time.sleep(5)
     print('end follow_to')
+    yield 'haha'
 @func
 def rep_a():
     print('start rep_a')
